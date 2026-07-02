@@ -1,0 +1,39 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
+import { getPublishedPosts, getUsedCategories } from '../../utils/blog';
+
+const base = import.meta.env.BASE_URL;
+
+const allPosts = await getCollection('blog');
+const publishedPosts = getPublishedPosts(allPosts);
+const categories = getUsedCategories(allPosts);
+---
+
+<BlogLayout>
+  <div class="blog-list">
+    <header class="blog-list-header">
+      <h1>写作与思考</h1>
+      <p>记录 AI 应用开发中的技术实践与项目复盘。代码之外，把踩过的坑和想清楚的道理写成文字。</p>
+    </header>
+
+    <nav class="blog-cat-bar" aria-label="文章分类">
+      <a href={`${base}blog/`} class="is-active">全部</a>
+      {categories.map(cat => (
+        <a href={`${base}blog/${cat.id}/`}>{cat.name}</a>
+      ))}
+      <span class="cat-count">{publishedPosts.length} 篇</span>
+    </nav>
+
+    {publishedPosts.length > 0 ? (
+      publishedPosts.map((post, i) => (
+        <BlogCard post={post} index={i} />
+      ))
+    ) : (
+      <div class="blog-empty">
+        <p>暂无文章，敬请期待。</p>
+      </div>
+    )}
+  </div>
+</BlogLayout>

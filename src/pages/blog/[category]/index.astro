@@ -1,0 +1,48 @@
+---
+import BlogLayout from '../../../layouts/BlogLayout.astro';
+import BlogCard from '../../../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
+import { getPublishedPosts, getUsedCategories, categoryNames, categoryDescs } from '../../../utils/blog';
+
+const base = import.meta.env.BASE_URL;
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const categories = [...new Set(getPublishedPosts(posts).map(p => p.data.category))];
+  return categories.map(category => ({
+    params: { category },
+  }));
+}
+
+const { category } = Astro.params;
+const allPosts = await getCollection('blog');
+const publishedPosts = getPublishedPosts(allPosts).filter(post => post.data.category === category);
+const allCats = getUsedCategories(allPosts);
+---
+
+<BlogLayout title={`${categoryNames[category] || category} · 博客`} description={categoryDescs[category] || ''}>
+  <div class="blog-list">
+    <header class="blog-list-header">
+      <h1>{categoryNames[category] || category}</h1>
+      <p>{categoryDescs[category] || ''}</p>
+    </header>
+
+    <nav class="blog-cat-bar" aria-label="文章分类">
+      <a href={`${base}blog/`}>全部</a>
+      {allCats.map(cat => (
+        <a href={`${base}blog/${cat.id}/`} class={cat.id === category ? 'is-active' : ''}>{cat.name}</a>
+      ))}
+      <span class="cat-count">{publishedPosts.length} 篇</span>
+    </nav>
+
+    {publishedPosts.length > 0 ? (
+      publishedPosts.map((post, i) => (
+        <BlogCard post={post} index={i} showCategory={false} />
+      ))
+    ) : (
+      <div class="blog-empty">
+        <p>这个分类下暂无文章。</p>
+      </div>
+    )}
+  </div>
+</BlogLayout>

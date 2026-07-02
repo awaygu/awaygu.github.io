@@ -1,0 +1,40 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { estimateReadingTime, fmtDate, postUrl, categoryNames } from '../utils/blog';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  index: number;
+  /** 是否在 meta 中显示分类标签（分类页通常不需要） */
+  showCategory?: boolean;
+}
+
+const { post, index, showCategory = true } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const readingTime = estimateReadingTime(post.body || '');
+---
+
+<a href={postUrl(post, base)} class="blog-row">
+  <span class="blog-row__num">{String(index + 1).padStart(2, '0')}</span>
+  <span class="blog-row__rule" aria-hidden="true"></span>
+  <span class="blog-row__main">
+    <h2 class="blog-row__title">{post.data.title}</h2>
+    <p class="blog-row__desc">{post.data.description}</p>
+    <div class="blog-row__meta">
+      <span>{fmtDate(post.data.date)}</span>
+      <span class="sep">·</span>
+      <span>{readingTime} min read</span>
+      {showCategory && (
+        <>
+          <span class="sep">·</span>
+          <span>{categoryNames[post.data.category] || post.data.category}</span>
+        </>
+      )}
+    </div>
+    <div class="blog-row__tags">
+      {post.data.tags.slice(0, 4).map(tag => (
+        <span class="blog-row__tag">{tag}</span>
+      ))}
+    </div>
+  </span>
+</a>

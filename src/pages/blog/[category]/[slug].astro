@@ -1,0 +1,132 @@
+---
+import BlogLayout from '../../../layouts/BlogLayout.astro';
+import { getCollection } from 'astro:content';
+import { getPublishedPosts, categoryNames, estimateReadingTime, fmtDate, postUrl, postSlug } from '../../../utils/blog';
+
+const base = import.meta.env.BASE_URL;
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: {
+      category: post.data.category,
+      slug: postSlug(post),
+    },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+// 同分类下的上一篇 / 下一篇（堵死死胡同）
+const allPosts = await getCollection('blog');
+const siblings = getPublishedPosts(allPosts).filter(p => p.data.category === post.data.category);
+const idx = siblings.findIndex(p => p.slug === post.slug);
+const newer = idx > 0 ? siblings[idx - 1] : null;       // 更新的一篇
+const older = idx < siblings.length - 1 ? siblings[idx + 1] : null; // 更旧的一篇
+
+const readingTime = estimateReadingTime(post.body || '');
+
+// 从正文提取 ## 二级标题生成 TOC
+const headings = (post.body || '')
+  .split('\n')
+  .map(line => line.trim())
+  .filter(line => line.startsWith('## ') && !line.startsWith('### '))
+  .map(line => {
+    const text = line.replace(/^##\s+/, '').trim();
+    const slug = text.toLowerCase()
+      .replace(/[^\p{L}\p{N}\s-]/gu, '')
+      .replace(/\s+/g, '-');
+    return { text, slug };
+  });
+---
+
+<BlogLayout title={`${post.data.title} · 博客`} description={post.data.description}>
+  <div class="blog-post-wrap">
+    <article class="blog-post-header">
+      <div class="blog-post-meta">
+        <span class="category">{categoryNames[post.data.category] || post.data.category}</span>
+        <span class="sep">·</span>
+        <span>{fmtDate(post.data.date)}</span>
+        <span class="sep">·</span>
+        <span>{readingTime} min read</span>
+      </div>
+      <h1 class="blog-post-title">{post.data.title}</h1>
+      <p class="blog-post-lead">{post.data.description}</p>
+      <div class="blog-post-tags">
+        {post.data.tags.map(tag => (
+          <span class="blog-row__tag">{tag}</span>
+        ))}
+      </div>
+    </article>
+
+    {headings.length > 0 && (
+      <aside class="post-toc" id="postToc" aria-label="目录">
+        <div class="post-toc__label">目录</div>
+        <ul>
+          {headings.map(h => (
+            <li><a href={`#${h.slug}`} data-toc={h.slug}>{h.text}</a></li>
+          ))}
+        </ul>
+      </aside>
+    )}
+
+    <div class="blog-post-body" id="postBody">
+      <Content />
+    </div>
+
+    <nav class="post-nav" aria-label="文章导航">
+      {older ? (
+        <a href={postUrl(older, base)} class="is-prev">
+          <span class="post-nav__label">← 上一篇</span>
+          <span class="post-nav__title">{older.data.title}</span>
+        </a>
+      ) : (
+        <a class="is-prev is-placeholder" aria-hidden="true" tabindex="-1"></a>
+      )}
+      {newer ? (
+        <a href={postUrl(newer, base)} class="is-next">
+          <span class="post-nav__label">下一篇 →</span>
+          <span class="post-nav__title">{newer.data.title}</span>
+        </a>
+      ) : (
+        <a class="is-next is-placeholder" aria-hidden="true" tabindex="-1"></a>
+      )}
+    </nav>
+
+    <div style="margin-top:var(--space-xl);">
+      <a href={`${base}blog/${post.data.category}/`} class="btn btn-outline" style="font-size:13px;padding:10px 20px;">← 返回{categoryNames[post.data.category] || '博客'}</a>
+    </div>
+  </div>
+</BlogLayout>
+
+<script is:inline>
+  /* TOC 宽屏显示 + 滚动高亮 */
+  (function(){
+    const toc = document.getElementById('postToc');
+    if(!toc) return;
+    // 仅宽屏显示
+    const mql = matchMedia('(min-width: 1025px)');
+    function apply(){ toc.style.display = mql.matches ? 'block' : 'none'; }
+    apply(); mql.addEventListener('change', apply);
+
+    const links = Array.from(toc.querySelectorAll('a[data-toc]'));
+    const targets = links.map(a => document.getElementById(a.dataset.toc)).filter(Boolean);
+    if(!targets.length) return;
+    const byId = new Map(links.map((a,i) => [targets[i], a]));
+    const active = new Set();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if(e.isIntersecting) active.add(e.target);
+        else active.delete(e.target);
+      });
+      links.forEach(a => a.classList.remove('is-active'));
+      // 高亮当前视口最靠上的标题
+      let top = null;
+      active.forEach(el => { if(!top || el.getBoundingClientRect().top < top.getBoundingClientRect().top) top = el; });
+      if(top && byId.get(top)) byId.get(top).classList.add('is-active');
+    }, { rootMargin: '0px 0px -70% 0px', threshold: 0 });
+    targets.forEach(t => io.observe(t));
+  })();
+</script>

@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>古泰玮 · AI 应用开发工程师</title>
+<meta name="description" content="6 年软件开发经验，从工程交付到 AI 应用构建。Python、Node.js、Vue — 独立完成全栈 AI 项目从 0 到 1。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================
+   Design System · CSS Custom Properties
+   一个资深前端的简历，从设计令牌开始
+   ============================================ */
+:root{
+  /* === Color Palette === */
+  --bg-base:        #0a0a0d;
+  --bg-elevated:    #101015;
+  --bg-surface:     #15151c;
+  --bg-glass:       rgba(255,255,255,0.02);
+  --border-subtle:  rgba(255,255,255,0.06);
+  --border-default: rgba(255,255,255,0.10);
+  --border-strong:  rgba(255,255,255,0.16);
+
+  --text-primary:   #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-tertiary:  #71717a;
+  --text-muted:     #52525b;
+
+  --accent:         #818cf8;
+  --accent-bright:  #a78bfa;
+  --accent-deep:    #6366f1;
+  --accent-glow:    rgba(129,140,248,0.15);
+
+  /* === Typography === */
+  --font-sans: 'Inter','Noto Sans SC',-apple-system,BlinkMacSystemFont,sans-serif;
+  --font-mono: 'JetBrains Mono','SF Mono','Cascadia Code',Consolas,monospace;
+
+  /* === Spacing Scale === */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+  --space-3xl: 100px;
+
+  /* === Radius === */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* === Transitions === */
+  --ease-out: cubic-bezier(0.16,1,0.3,1);
+  --ease-spring: cubic-bezier(0.34,1.56,0.64,1);
+
+  /* === Layout === */
+  --nav-w: 140px;
+  --content-max: 1100px;
+}
+
+/* === Light Theme · 日间模式 === */
+[data-theme="light"]{
+  --bg-base:        #f8f8fb;
+  --bg-elevated:    #ffffff;
+  --bg-surface:     #f1f1f5;
+  --bg-glass:       rgba(0,0,0,0.02);
+  --border-subtle:  rgba(0,0,0,0.08);
+  --border-default: rgba(0,0,0,0.12);
+  --border-strong:  rgba(0,0,0,0.18);
+
+  --text-primary:   #18181b;
+  --text-secondary: #52525b;
+  --text-tertiary:  #71717a;
+  --text-muted:     #a1a1aa;
+
+  --accent:         #6366f1;
+  --accent-bright:  #4f46e5;
+  --accent-deep:    #4338ca;
+  --accent-glow:    rgba(99,102,241,0.12);
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:40px}
+body{
+  font-family:var(--font-sans);
+  background:var(--bg-base);
+  color:var(--text-secondary);
+  line-height:1.7;
+  overflow-x:hidden;
+  padding-left:var(--nav-w);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  font-feature-settings:"ss01","cv11";
+}
+
+::selection{background:var(--accent-deep);color:#fff}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg-base)}
+::-webkit-scrollbar-thumb{background:var(--accent-deep);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+/* === Ambient Background === */
+#particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+.grain{
+  position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.4;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.7 0 0 0 0.15 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* === Navigation === */
+nav{
+  position:fixed;top:0;left:0;z-index:100;
+  height:100vh;width:var(--nav-w);
+  background:var(--nav-bg,rgba(10,10,13,0.75));
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-right:1px solid var(--border-subtle);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:32px 16px;
+}
+[data-theme="light"] nav{--nav-bg:rgba(255,255,255,0.8)}
+.nav-brand{
+  font-family:var(--font-mono);font-size:13px;font-weight:600;
+  color:var(--text-primary);letter-spacing:-0.5px;
+  display:flex;align-items:center;gap:8px;
+}
+.nav-brand::before{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 12px var(--accent-glow);
+  animation:pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:0.5;transform:scale(0.85)}
+}
+.nav-links{display:flex;flex-direction:column;gap:4px;list-style:none}
+.nav-links a{
+  display:flex;align-items:center;gap:10px;
+  color:var(--text-tertiary);text-decoration:none;
+  font-family:var(--font-sans);font-size:15px;font-weight:500;
+  padding:11px 14px;border-radius:var(--radius-sm);
+  transition:all 0.3s var(--ease-out);
+  position:relative;
+}
+.nav-links a .nav-idx{
+  font-family:var(--font-mono);font-size:11px;color:var(--text-muted);width:20px;
+}
+.nav-links a:hover{color:var(--text-primary);background:var(--bg-glass)}
+.nav-links a.active{color:var(--accent);background:var(--accent-glow)}
+.nav-links a.active .nav-idx{color:var(--accent)}
+
+/* === Theme Toggle === */
+.theme-toggle{
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;margin:24px auto 0;
+  border-radius:var(--radius-sm);cursor:pointer;
+  background:var(--bg-glass);border:1px solid var(--border-subtle);
+  color:var(--text-tertiary);transition:all 0.3s var(--ease-out);
+}
+.theme-toggle:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-glow)}
+.theme-toggle svg{width:18px;height:18px}
+.theme-toggle .icon-sun{display:none}
+.theme-toggle .icon-moon{display:block}
+[data-theme="light"] .theme-toggle .icon-sun{display:block}
+[data-theme="light"] .theme-toggle .icon-moon{display:none}
+.nav-footer{
+  font-family:var(--font-mono);font-size:10px;
+  color:var(--text-muted);line-height:1.6;
+}
+.nav-footer .status{color:#4ade80;display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.nav-footer .status::before{content:'';width:6px;height:6px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px rgba(74,222,128,0.6)}
+
+/* === Layout === */
+main{position:relative;z-index:2}
+
+/* === Hero === */
+.hero{
+  position:relative;min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:var(--space-3xl) 6vw;
+  max-width:var(--content-max);margin:0 auto;width:100%;
+}
+.hero-tag{
+  font-family:var(--font-mono);font-size:12px;color:var(--accent);
+  display:inline-flex;align-items:center;gap:10px;
+  margin-bottom:var(--space-lg);padding:6px 14px;
+  background:var(--accent-glow);border:1px solid rgba(129,140,248,0.2);
+  border-radius:100px;width:fit-content;
+  opacity:0;transform:translateY(20px);
+  animation:fadeUp 0.8s var(--ease-out) 0.1s forwards;
+}
+.hero-tag::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%}
+.hero h1{
+  font-size:clamp(40px,6.5vw,76px);font-weight:800;line-height:1.05;
+  letter-spacing:-0.03em;color:var(--text-primary);
+  opacity:0;transform:translateY(24px);
+  animation:fadeUp 1s var(--ease-out) 0.2s forwards;
+}
+.hero h1 .gradient{
+  background:linear-gradient(135deg,var(--accent-bright),var(--accent),#e879f9 80%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  position:relative;
+}
+.hero h1 .cursor{
+  display:inline-block;width:4px;height:0.85em;background:var(--accent);
+  margin-left:4px;vertical-align:baseline;
+  animation:blink 1s steps(2) infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hero-sub{
+  font-size:clamp(15px,1.6vw,19px);color:var(--text-secondary);
+  max-width:580px;margin-top:var(--space-xl);line-height:1.75;font-weight:300;
+  opacity:0;transform:translateY(24px);
+  animation:fadeUp 1s var(--ease-out) 0.4s forwards;
+}
+.hero-actions{
+  display:flex;gap:var(--space-md);margin-top:var(--space-xl);flex-wrap:wrap;
+  opacity:0;transform:translateY(24px);
+  animation:fadeUp 1s var(--ease-out) 0.55s forwards;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 28px;border-radius:var(--radius-md);
+  font-size:14px;font-weight:600;font-family:var(--font-sans);
+  text-decoration:none;cursor:pointer;border:none;
+  transition:all 0.35s var(--ease-out);
+}
+.btn-primary{
+  background:var(--accent-deep);color:#fff;
+  box-shadow:0 4px 20px rgba(99,102,241,0.25),inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.btn-primary:hover{
+  background:var(--accent);transform:translateY(-2px);
+  box-shadow:0 8px 28px rgba(99,102,241,0.4),inset 0 1px 0 rgba(255,255,255,0.2);
+}
+.btn-outline{
+  background:transparent;color:var(--text-primary);
+  border:1px solid var(--border-default);
+}
+.btn-outline:hover{
+  background:var(--bg-glass);border-color:var(--accent);color:var(--accent);
+}
+.hero-meta{
+  display:flex;gap:var(--space-xl);margin-top:var(--space-2xl);flex-wrap:wrap;
+  padding-top:var(--space-xl);border-top:1px solid var(--border-subtle);
+  opacity:0;transform:translateY(24px);
+  animation:fadeUp 1s var(--ease-out) 0.7s forwards;
+}
+.hero-meta-item{
+  font-family:var(--font-mono);font-size:12px;color:var(--text-tertiary);
+  display:flex;align-items:center;gap:8px;
+}
+.hero-meta-item .label{color:var(--text-muted)}
+.hero-meta-item .value{color:var(--text-secondary)}
+
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+/* === Sections === */
+section{
+  position:relative;z-index:2;
+  padding:var(--space-3xl) 6vw;
+  max-width:var(--content-max);margin:0 auto;
+  width:100%;
+}
+.section-head{margin-bottom:var(--space-2xl)}
+.section-label{
+  font-family:var(--font-mono);font-size:11px;font-weight:500;
+  letter-spacing:0.15em;color:var(--accent);
+  display:flex;align-items:center;gap:12px;margin-bottom:12px;
+}
+.section-label::before{
+  content:'';width:24px;height:1px;background:var(--accent);
+}
+.section-title{
+  font-size:clamp(28px,3.5vw,42px);font-weight:700;color:var(--text-primary);
+  letter-spacing:-0.02em;line-height:1.2;
+}
+.section-title .accent{color:var(--accent)}
+
+/* === About === */
+.about-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:var(--space-2xl);align-items:start}
+.about-text p{color:var(--text-secondary);margin-bottom:var(--space-md);font-size:15px;line-height:1.85}
+.about-text p:last-child{font-family:var(--font-mono);font-size:12px;color:var(--text-muted);margin-top:var(--space-lg)}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-md)}
+.stat-card{
+  background:var(--bg-glass);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);padding:var(--space-xl) var(--space-lg);
+  text-align:left;transition:all 0.4s var(--ease-out);position:relative;overflow:hidden;
+}
+.stat-card::after{
+  content:'';position:absolute;inset:0;border-radius:var(--radius-lg);
+  background:radial-gradient(circle at 50% 0%,var(--accent-glow),transparent 70%);
+  opacity:0;transition:opacity 0.4s var(--ease-out);
+}
+.stat-card:hover{border-color:rgba(129,140,248,0.25);transform:translateY(-3px)}
+.stat-card:hover::after{opacity:1}
+.stat-card:hover .stat-num .highlight{filter:brightness(1.2)}
+.stat-num{font-size:40px;font-weight:800;color:var(--text-primary);line-height:1;position:relative;z-index:1;letter-spacing:-0.03em}
+.stat-num .highlight{
+  background:linear-gradient(135deg,var(--accent-bright),var(--accent));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  transition:filter 0.3s;
+}
+.stat-label{font-size:12px;color:var(--text-tertiary);margin-top:8px;line-height:1.5;font-family:var(--font-mono);position:relative;z-index:1}
+
+/* === Skills === */
+.skills-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-md)}
+.skill-card{
+  background:var(--bg-glass);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);padding:var(--space-lg) var(--space-xl);
+  transition:all 0.4s var(--ease-out);position:relative;overflow:hidden;
+}
+.skill-card::before{
+  content:'';position:absolute;left:0;top:0;width:3px;height:0;
+  background:linear-gradient(var(--accent-bright),var(--accent));
+  transition:height 0.4s var(--ease-out);border-radius:0 3px 3px 0;
+}
+.skill-card:hover{border-color:rgba(129,140,248,0.2);background:rgba(129,140,248,0.03)}
+.skill-card:hover::before{height:100%}
+.skill-cat{
+  font-family:var(--font-mono);font-size:11px;color:var(--accent);
+  font-weight:500;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;
+}
+.skill-card h4{font-size:16px;color:var(--text-primary);font-weight:600;margin-bottom:10px}
+.skill-card p{font-size:13px;color:var(--text-tertiary);line-height:1.7}
+.skill-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--space-md)}
+.skill-tag{
+  font-family:var(--font-mono);padding:3px 10px;border-radius:6px;
+  font-size:11px;font-weight:500;color:var(--accent);
+  background:rgba(129,140,248,0.08);border:1px solid rgba(129,140,248,0.12);
+  transition:all 0.2s;
+}
+.skill-tag:hover{background:rgba(129,140,248,0.15);color:var(--accent-bright)}
+
+/* === Experience Timeline === */
+.timeline{position:relative;padding-left:32px}
+.timeline::before{
+  content:'';position:absolute;left:7px;top:12px;bottom:12px;
+  width:1px;background:linear-gradient(var(--accent),transparent);
+}
+.timeline-item{position:relative;margin-bottom:var(--space-2xl)}
+.timeline-item:last-child{margin-bottom:0}
+.timeline-dot{
+  position:absolute;left:-32px;top:8px;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--bg-base);border:2px solid var(--accent);
+  box-shadow:0 0 0 4px var(--bg-base),0 0 12px var(--accent-glow);
+  transition:all 0.3s var(--ease-out);
+}
+.timeline-item:hover .timeline-dot{background:var(--accent);box-shadow:0 0 0 4px var(--bg-base),0 0 20px var(--accent)}
+.timeline-header{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:var(--space-sm)}
+.timeline-title{font-size:17px;font-weight:600;color:var(--text-primary)}
+.timeline-company{font-size:14px;color:var(--accent)}
+.timeline-date{
+  font-family:var(--font-mono);font-size:12px;color:var(--text-muted);
+  white-space:nowrap;padding:3px 10px;background:var(--bg-surface);
+  border:1px solid var(--border-subtle);border-radius:6px;
+}
+.timeline-body p{margin-top:8px;font-size:14px;color:var(--text-secondary);line-height:1.8}
+.timeline-body ul{list-style:none;padding:0;margin-top:10px}
+.timeline-body ul li{
+  position:relative;padding-left:20px;margin-bottom:8px;
+  font-size:14px;color:var(--text-secondary);line-height:1.75;
+}
+.timeline-body ul li::before{
+  content:'';position:absolute;left:0;top:11px;
+  width:8px;height:1px;background:var(--accent);
+}
+
+/* === Projects === */
+.project-featured{
+  background:linear-gradient(135deg,rgba(129,140,248,0.06),rgba(167,139,250,0.03));
+  border:1px solid rgba(129,140,248,0.15);
+  border-radius:var(--radius-xl);padding:var(--space-2xl);
+  margin-bottom:var(--space-xl);position:relative;overflow:hidden;
+}
+.project-featured::before{
+  content:'';position:absolute;top:0;right:0;width:300px;height:300px;
+  background:radial-gradient(circle,var(--accent-glow),transparent 70%);
+  opacity:0.6;pointer-events:none;
+}
+.project-featured .badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:var(--font-mono);font-size:11px;color:var(--accent);
+  font-weight:500;letter-spacing:0.1em;
+  background:rgba(129,140,248,0.1);padding:5px 14px;border-radius:100px;
+  margin-bottom:var(--space-md);border:1px solid rgba(129,140,248,0.15);
+}
+.project-featured h3{font-size:24px;font-weight:700;color:var(--text-primary);margin-bottom:6px;letter-spacing:-0.01em;position:relative}
+.project-featured .stack{
+  font-family:var(--font-mono);font-size:12px;color:var(--accent);
+  margin-bottom:var(--space-lg);line-height:1.6;
+}
+.project-featured .desc{font-size:14px;color:var(--text-secondary);line-height:1.8;margin-bottom:var(--space-lg);position:relative}
+.project-featured .highlight-list{list-style:none;padding:0;position:relative}
+.project-featured .highlight-list li{
+  position:relative;padding-left:22px;margin-bottom:12px;
+  font-size:14px;color:var(--text-secondary);line-height:1.75;
+}
+.project-featured .highlight-list li::before{
+  content:'▸';position:absolute;left:0;top:0;color:var(--accent);font-weight:700;
+}
+.project-featured .highlight-list li strong{color:var(--text-primary)}
+
+.project-other{
+  background:var(--bg-glass);border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);padding:var(--space-xl);
+  margin-bottom:var(--space-md);transition:all 0.4s var(--ease-out);
+}
+.project-other:hover{border-color:rgba(129,140,248,0.2);transform:translateY(-2px)}
+.project-other h4{font-size:16px;font-weight:600;color:var(--text-primary);margin-bottom:4px}
+.project-other .meta{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-bottom:10px}
+.project-other p{font-size:14px;color:var(--text-tertiary);line-height:1.75}
+
+/* === Contact === */
+.contact-card{
+  background:linear-gradient(135deg,rgba(129,140,248,0.06),rgba(167,139,250,0.03));
+  border:1px solid rgba(129,140,248,0.15);
+  border-radius:var(--radius-xl);padding:var(--space-3xl) var(--space-2xl);
+  text-align:center;position:relative;overflow:hidden;
+}
+.contact-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 0%,var(--accent-glow),transparent 60%);
+  opacity:0.4;pointer-events:none;
+}
+.contact-card h3{font-size:28px;font-weight:700;color:var(--text-primary);margin-bottom:var(--space-sm);position:relative;letter-spacing:-0.01em}
+.contact-card p{font-size:15px;color:var(--text-tertiary);margin-bottom:var(--space-2xl);position:relative}
+.contact-links{display:flex;justify-content:center;gap:var(--space-md);flex-wrap:wrap;position:relative}
+.contact-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 26px;border-radius:var(--radius-md);
+  font-size:14px;font-weight:600;text-decoration:none;
+  color:var(--text-primary);background:var(--bg-glass);
+  border:1px solid var(--border-default);
+  transition:all 0.35s var(--ease-out);
+}
+.contact-btn:hover{
+  background:rgba(129,140,248,0.1);border-color:var(--accent);
+  color:var(--accent);transform:translateY(-2px);
+  box-shadow:0 8px 24px var(--accent-glow);
+}
+.contact-btn svg{transition:transform 0.3s var(--ease-out)}
+.contact-btn:hover svg{transform:scale(1.15)}
+
+/* === Footer === */
+footer{
+  position:relative;z-index:2;text-align:center;
+  padding:var(--space-xl) 24px;font-family:var(--font-mono);
+  font-size:11px;color:var(--text-muted);
+  border-top:1px solid var(--border-subtle);
+}
+footer span{color:var(--accent)}
+
+/* === Scroll Reveal === */
+[data-reveal]{opacity:0;transform:translateY(28px);transition:opacity 0.8s var(--ease-out),transform 0.8s var(--ease-out)}
+[data-reveal].is-visible{opacity:1;transform:translateY(0)}
+[data-reveal-delay="1"]{transition-delay:0.08s}
+[data-reveal-delay="2"]{transition-delay:0.16s}
+[data-reveal-delay="3"]{transition-delay:0.24s}
+[data-reveal-delay="4"]{transition-delay:0.32s}
+
+/* === Responsive === */
+@media(max-width:1024px){
+  :root{--nav-w:64px}
+  nav{padding:24px 12px}
+  .nav-brand,.nav-footer{display:none}
+  .nav-links a{justify-content:center;padding:12px 8px}
+  .nav-links a .nav-idx{display:none}
+  .nav-links a span:not(.nav-idx){font-size:0}
+  .nav-links a span:not(.nav-idx)::after{
+    content:attr(data-short);font-size:18px;color:inherit;
+  }
+}
+@media(max-width:768px){
+  :root{--nav-w:0px}
+  nav{
+    width:100%;height:56px;flex-direction:row;
+    justify-content:center;padding:0 16px;
+    border-right:none;border-bottom:1px solid var(--border-subtle);
+  }
+  .nav-brand,.nav-footer{display:none}
+  .nav-links{flex-direction:row;gap:4px}
+  .nav-links a{padding:10px 14px}
+  .nav-links a .nav-idx{display:none}
+  .nav-links a span:not(.nav-idx){font-size:13px}
+  .nav-links a span:not(.nav-idx)::after{display:none}
+  body{padding-left:0;padding-top:56px}
+  .hero{padding:80px 24px}
+  section{padding:64px 24px}
+  .about-grid{grid-template-columns:1fr;gap:32px}
+  .skills-grid{grid-template-columns:1fr}
+  .project-featured{padding:24px}
+  .contact-card{padding:40px 24px}
+  .hero-meta{gap:16px;flex-direction:column}
+  .timeline-header{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div class="grain"></div>
+
+<!-- Navigation -->
+<nav>
+  <ul class="nav-links">
+    <li><a href="#about" data-short="关于"><span class="nav-idx">01</span><span>关于</span></a></li>
+    <li><a href="#skills" data-short="技能"><span class="nav-idx">02</span><span>技能</span></a></li>
+    <li><a href="#experience" data-short="经历"><span class="nav-idx">03</span><span>经历</span></a></li>
+    <li><a href="#projects" data-short="项目"><span class="nav-idx">04</span><span>项目</span></a></li>
+    <li><a href="#contact" data-short="联系"><span class="nav-idx">05</span><span>联系</span></a></li>
+  </ul>
+  <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+  </button>
+</nav>
+
+<main>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-tag">AI 应用开发工程师</div>
+  <h1>
+    古泰玮<br>
+    <span class="gradient">构建有思考的</span><span class="cursor"></span><br>
+    <span class="gradient">智能应用与系统</span>
+  </h1>
+  <p class="hero-sub">
+    6 年软件开发经验，从工程交付到 AI 应用构建。<br>
+    Python、Node.js、Vue — 独立完成全栈 AI 项目从 0 到 1。
+  </p>
+  <div class="hero-actions">
+    <a href="#projects" class="btn btn-primary">查看项目 →</a>
+    <a href="#contact" class="btn btn-outline">联系我</a>
+  </div>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><span class="label">location</span><span class="value">Guangzhou</span></div>
+    <div class="hero-meta-item"><span class="label">experience</span><span class="value">6 years</span></div>
+    <div class="hero-meta-item"><span class="label">education</span><span class="value">Bachelor</span></div>
+    <div class="hero-meta-item"><span class="label">status</span><span class="value" style="color:#4ade80">open to work</span></div>
+  </div>
+</section>
+
+<!-- About -->
+<section id="about">
+  <div class="section-head" data-reveal>
+    <div class="section-label">01 / about</div>
+    <h2 class="section-title">6 年 <span class="accent">工程交付</span> → <span class="accent">AI 应用</span></h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text" data-reveal>
+      <p>6 年软件开发，其中近半年专注 AI 应用方向。我不只是写页面的前端——我独立设计、开发、上线的项目覆盖了 H5 应用、后台管理系统、Node.js 中间层服务，最近半年自己从零搭建了一个基于大模型的 AI 内容平台。</p>
+        <p>做过海外直播、仓储配送物流等业务场景，能看懂产品需求，理解技术方案怎么落地。现在在找 AI 应用开发工程师的岗位——用我已有的工程经验，加上正在深化的 AI 技术栈，做出真正能用的产品。</p>
+      <p>#Python #FastAPI #LangChain #LangGraph #RAG #Agent #NodeJS #Vue</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card" data-reveal data-reveal-delay="1">
+        <div class="stat-num"><span class="highlight">6</span></div>
+        <div class="stat-label">年软件开发</div>
+      </div>
+      <div class="stat-card" data-reveal data-reveal-delay="2">
+        <div class="stat-num"><span class="highlight">4</span></div>
+        <div class="stat-label">个独立交付项目</div>
+      </div>
+      <div class="stat-card" data-reveal data-reveal-delay="3">
+        <div class="stat-num"><span class="highlight">2</span></div>
+        <div class="stat-label">种后端语言<br>Python · Node.js</div>
+      </div>
+      <div class="stat-card" data-reveal data-reveal-delay="4">
+        <div class="stat-num"><span class="highlight">1</span></div>
+        <div class="stat-label">个 AI 全栈项目<br>（生产就绪）</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Skills -->
+<section id="skills">
+  <div class="section-head" data-reveal>
+    <div class="section-label">02 / skills</div>
+    <h2 class="section-title">技术<span class="accent">栈</span></h2>
+  </div>
+  <div class="skills-grid">
+    <div class="skill-card" data-reveal>
+      <div class="skill-cat">AI 应用</div>
+      <h4>LangChain · LangGraph · RAG</h4>
+      <p>完整 RAG pipeline：文档解析、Chunking/Embedding、Hybrid 检索、RRF 融合排序、Rerank。基于 StateGraph 的 Agent 系统，集成 9 个工具调用与记忆压缩。</p>
+      <div class="skill-tags">
+        <span class="skill-tag">LangChain</span><span class="skill-tag">LangGraph</span><span class="skill-tag">FAISS</span><span class="skill-tag">RAG</span><span class="skill-tag">Prompt</span>
+      </div>
+    </div>
+    <div class="skill-card" data-reveal data-reveal-delay="1">
+      <div class="skill-cat">后端</div>
+      <h4>Python · FastAPI · Node.js</h4>
+      <p>生产级异步 API 开发、SSE 流式响应、RESTful 接口设计、中间层服务、SQLite 持久化。了解 Docker 部署与日志监控。</p>
+      <div class="skill-tags">
+        <span class="skill-tag">Python</span><span class="skill-tag">FastAPI</span><span class="skill-tag">Node.js</span><span class="skill-tag">SQLite</span><span class="skill-tag">REST</span>
+      </div>
+    </div>
+    <div class="skill-card" data-reveal data-reveal-delay="2">
+      <div class="skill-cat">前端</div>
+      <h4>Vue 3 · TypeScript · H5</h4>
+        <p>6 年前端沉淀：组件库搭建、模块化架构、移动端多平台适配、WebSocket 通信、多端 H5 集成。</p>
+      <div class="skill-tags">
+        <span class="skill-tag">Vue 3</span><span class="skill-tag">TypeScript</span><span class="skill-tag">Vite</span><span class="skill-tag">Element Plus</span>
+      </div>
+    </div>
+    <div class="skill-card" data-reveal data-reveal-delay="3">
+      <div class="skill-cat">工具 & 协作</div>
+      <h4>Git · Docker · Playwright</h4>
+      <p>版本控制工作流、浏览器自动化测试与发布、CI/CD 文件（GitLab CI）、Docker 容器化部署。</p>
+      <div class="skill-tags">
+        <span class="skill-tag">Git</span><span class="skill-tag">Docker</span><span class="skill-tag">Playwright</span><span class="skill-tag">CI/CD</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Experience -->
+<section id="experience">
+  <div class="section-head" data-reveal>
+    <div class="section-label">03 / experience</div>
+    <h2 class="section-title">职业<span class="accent">路径</span></h2>
+  </div>
+  <div class="timeline">
+    <div class="timeline-item" data-reveal>
+      <div class="timeline-dot"></div>
+      <div class="timeline-header">
+        <div>
+          <span class="timeline-title">前端开发工程师</span>
+          <span class="timeline-company"> · 广州麦田信息技术有限公司</span>
+        </div>
+        <span class="timeline-date">2022.07 — 至今</span>
+      </div>
+      <div class="timeline-body">
+        <p>独立负责海外直播平台 Dream Like App 的 H5 前端 + Node.js 中间层开发，支撑东南亚及拉美市场的日常运营与迭代。</p>
+        <ul>
+          <li>主导 H5 页面系统开发（活动秒杀/签到/充值/帮助中心等），月均支持数十场运营活动上线</li>
+          <li>开发 Node.js 中间层服务（API 聚合、WebSocket 通信、SSR 优化），降低前端与后端的直接耦合</li>
+          <li>搭建内部组件库 + 可配置化活动模板系统，运营团队自主配置即可上线活动，减少 60%+ 重复开发</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="timeline-item" data-reveal data-reveal-delay="1">
+      <div class="timeline-dot"></div>
+      <div class="timeline-header">
+        <div>
+          <span class="timeline-title">Web 前端</span>
+          <span class="timeline-company"> · 广东知行易通信息科技有限公司</span>
+        </div>
+        <span class="timeline-date">2019.08 — 2022.06</span>
+      </div>
+      <div class="timeline-body">
+        <p>参与企业级 WMS/TMS 系统前端开发，独立交付多条产品线的移动端 App。</p>
+        <ul>
+          <li>WMS 仓储管理后台：负责前端架构设计，实现收/发/盘/存全流程管理，基于角色的权限控制系统</li>
+          <li>PDA 手持端 App（Vue + uni-app）：扫码拣货、移库、盘点等核心操作，对接蓝牙打印机和条码扫描</li>
+          <li>仟吉 TMS 配送全端：独立开发分拣平板 App、司机配送 App、门店签收 App，对接高德 SDK 实现配送车辆实时跟踪</li>
+          <li>参与需求评审和技术方案讨论，推动从需求到交付的快速迭代</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Projects -->
+<section id="projects">
+  <div class="section-head" data-reveal>
+    <div class="section-label">04 / projects</div>
+    <h2 class="section-title">核心 <span class="accent">项目</span></h2>
+  </div>
+
+  <div class="project-featured" data-reveal>
+    <div class="badge">✦ 个人项目 · 全栈独立开发</div>
+    <h3>识渊 AI — 智能内容创作平台</h3>
+    <div class="stack">Python · FastAPI · LangChain · LangGraph · FAISS · DashScope · Vue 3 · TypeScript</div>
+    <p class="desc">基于大语言模型的智能内容平台，覆盖「信息获取 → AI 理解 → 辅助创作 → 多平台发布」的完整工作流。从架构设计到编码部署一人完成。</p>
+    <ul class="highlight-list">
+      <li><strong>RAG 知识库系统：</strong>PDF/DOCX/TXT/MD 上传 → 自动分块（固定大小 + 句子边界，500/50）→ DashScope Embedding → FAISS 多库隔离。检索采用 <strong>Hybrid 检索（向量语义 + BM25 关键词）+ RRF 融合排序</strong>，同时涵盖 query 意图识别与改写前置过滤</li>
+      <li><strong>LangGraph Agent 引擎：</strong>基于 StateGraph 的智能体架构，集成联网搜索（Kimi/Tavily 双引擎切换）、新闻解读、配图生成等 9 个工具。短期记忆用 summary 压缩 + 80K token 自动截断，结合 SQLite Checkpointer 实现多会话持久化，SSE 流式输出</li>
+      <li><strong>AI 新闻解读 + 发布：</strong>9 平台新闻聚合爬虫 + AI 风格化解读 + 自动配图 + Playwright 自动化发布至小红书 / 微信公众号</li>
+      <li><strong>架构考量：</strong>为什么选 FAISS？（轻量级个人项目够用，亿级数据再上 Milvus）为什么选 LangGraph？（Agent 天然需要循环/条件分支，Chain 不够用）</li>
+    </ul>
+  </div>
+
+  <div class="project-other" data-reveal>
+    <h4>Dream Like · 海外直播 App H5 系统</h4>
+    <div class="meta">2022.07 — 至今 | JavaScript · Vue · Node.js</div>
+    <p>海外直播平台原生混合开发。独立负责所有 H5 页面：活动秒杀/签到/排行榜、帮助中心、隐私合规等。封装动画组件库（SVGA/PAG）和工具函数库，沉淀可复用组件供多业务线使用。</p>
+  </div>
+
+  <div class="project-other" data-reveal data-reveal-delay="1">
+    <h4>仟吉 TMS · 配送管理全端系统</h4>
+    <div class="meta">2021.07 — 2022.04 | Vue · uni-app · 高德地图 SDK</div>
+    <p>为仟吉食品打造，覆盖「分拣 → 配送 → 签收」全链路：平板分拣 App（无纸化拣货，效率提升约 40%）、司机配送 App（高德地图实时定位）、门店签收 App（拍照留证/部分签收）。后端管理系统含排车/报表/基础资料维护。</p>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+  <div class="section-head" data-reveal>
+    <div class="section-label">05 / contact</div>
+  </div>
+  <div class="contact-card" data-reveal>
+    <h3>一起做点有意思的事</h3>
+    <p>正在找 AI 应用开发工程师岗位 · 广州 · 可快速到岗</p>
+    <div class="contact-links">
+      <a href="tel:13662820575" class="contact-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        13662820575
+      </a>
+      <a href="mailto:1335025287@qq.com" class="contact-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        1335025287@qq.com
+      </a>
+      <a href="https://github.com/awaygu/shiyuan-ai" target="_blank" class="contact-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p>© 2026 古泰玮 · <span>Built from scratch</span> · Crafted with care</p>
+</footer>
+
+<script>
+/* ============================================
+   Particle System · 轻量级粒子网络
+   使用 Canvas2D + requestAnimationFrame
+   ============================================ */
+(function(){
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [];
+  const PARTICLE_COUNT = 80;
+  const CONNECT_DIST = 140;
+
+  function resize(){
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = canvas.width = window.innerWidth * dpr;
+    h = canvas.height = window.innerHeight * dpr;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    ctx.scale(dpr, dpr);
+  }
+
+  class Particle{
+    constructor(){this.reset(true)}
+    reset(initial){
+      this.x = Math.random() * window.innerWidth;
+      this.y = Math.random() * window.innerHeight;
+      this.vx = (Math.random() - 0.5) * 0.25;
+      this.vy = (Math.random() - 0.5) * 0.25;
+      this.r = Math.random() * 1.2 + 0.4;
+      this.baseO = Math.random() * 0.3 + 0.08;
+    }
+    update(){
+      this.x += this.vx; this.y += this.vy;
+      if(this.x < 0 || this.x > window.innerWidth) this.vx *= -1;
+      if(this.y < 0 || this.y > window.innerHeight) this.vy *= -1;
+    }
+    draw(){
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(129,140,248,${this.baseO})`;
+      ctx.fill();
+    }
+  }
+
+  function init(){
+    particles = [];
+    for(let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+  }
+
+  function connect(){
+    for(let i = 0; i < particles.length; i++){
+      for(let j = i + 1; j < particles.length; j++){
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if(dist < CONNECT_DIST){
+          const opacity = (1 - dist / CONNECT_DIST) * 0.12;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(129,140,248,${opacity})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  let rafId;
+  function animate(){
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    particles.forEach(p => { p.update(); p.draw(); });
+    connect();
+    rafId = requestAnimationFrame(animate);
+  }
+
+  resize();
+  init();
+  animate();
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      cancelAnimationFrame(rafId);
+      resize();
+      init();
+      animate();
+    }, 250);
+  });
+})();
+
+/* ============================================
+   Scroll Reveal · IntersectionObserver
+   ============================================ */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('is-visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+/* ============================================
+   Scroll Spy · IntersectionObserver 导航高亮
+   当区域进入视口中部时激活
+   ============================================ */
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+const spyObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      const id = entry.target.getAttribute('id');
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, {
+  rootMargin: '-45% 0px -45% 0px',
+  threshold: 0
+});
+
+sections.forEach(section => spyObserver.observe(section));
+
+/* ============================================
+   Smooth Scroll · 平滑导航
+   ============================================ */
+navLinks.forEach(link => {
+  link.addEventListener('click', function(e){
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if(target){
+      const top = target.getBoundingClientRect().top + window.scrollY - 40;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  });
+});
+
+/* ============================================
+   Magnetic Buttons · 磁吸按钮微交互
+   ============================================ */
+document.querySelectorAll('.btn, .contact-btn').forEach(btn => {
+  btn.addEventListener('mousemove', function(e){
+    const rect = this.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    this.style.transform = `translate(${x * 0.15}px, ${y * 0.15}px)`;
+  });
+  btn.addEventListener('mouseleave', function(){
+    this.style.transform = '';
+  });
+});
+
+/* ============================================
+   Theme Toggle · 日/夜间模式切换
+   ============================================ */
+(function(){
+  const root = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+  const saved = localStorage.getItem('theme');
+  if(saved === 'light') root.setAttribute('data-theme','light');
+
+  toggle.addEventListener('click', () => {
+    const isLight = root.getAttribute('data-theme') === 'light';
+    if(isLight){
+      root.removeAttribute('data-theme');
+      localStorage.setItem('theme','dark');
+    }else{
+      root.setAttribute('data-theme','light');
+      localStorage.setItem('theme','light');
+    }
+  });
+})();
+</script>
+</body>
+</html>

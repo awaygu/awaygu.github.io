@@ -1,0 +1,20 @@
+{
+  "name": "awaygu.github.io",
+  "version": "1.0.0",
+  "description": "个人博客与简历 — AI 应用开发工程师",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^4.15.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  },
+  "keywords": ["blog", "astro", "ai", "resume"],
+  "author": "",
+  "license": "MIT"
+}

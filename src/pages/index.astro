@@ -1,0 +1,66 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro';
+import { getCollection } from 'astro:content';
+
+const base = import.meta.env.BASE_URL;
+
+const allPosts = await getCollection('blog');
+const publishedPosts = allPosts.filter(post => !post.data.draft).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const categoryNames: Record<string, string> = {
+  'ai-application': 'AI 应用',
+  'engineering': '工程实践',
+  'interview': '面试复盘',
+};
+
+function estimateReadingTime(text: string): number {
+  return Math.max(1, Math.ceil((text || '').length / 400));
+}
+function fmtDate(d: Date): string {
+  return d.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '.');
+}
+---
+
+<BlogLayout>
+  <div class="blog-list">
+    <header class="blog-list-header">
+      <h1>写作与思考</h1>
+      <p>记录 AI 应用开发中的技术实践与项目复盘。代码之外，把踩过的坑和想清楚的道理写成文字。</p>
+    </header>
+
+    {publishedPosts.length > 0 ? (
+      publishedPosts.map((post, i) => {
+        const readingTime = estimateReadingTime(post.body || '');
+        return (
+          <a
+            href={`${base}blog/${post.data.category}/${post.slug.split('/').pop()}/`}
+            class="blog-row"
+          >
+            <span class="blog-row__num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="blog-row__rule" aria-hidden="true"></span>
+            <span class="blog-row__main">
+              <h2 class="blog-row__title">{post.data.title}</h2>
+              <p class="blog-row__desc">{post.data.description}</p>
+              <div class="blog-row__meta">
+                <span>{fmtDate(post.data.date)}</span>
+                <span class="sep">·</span>
+                <span>{readingTime} min read</span>
+                <span class="sep">·</span>
+                <span>{categoryNames[post.data.category] || post.data.category}</span>
+              </div>
+              <div class="blog-row__tags">
+                {post.data.tags.slice(0, 4).map(tag => (
+                  <span class="blog-row__tag">{tag}</span>
+                ))}
+              </div>
+            </span>
+          </a>
+        );
+      })
+    ) : (
+      <div class="blog-empty">
+        <p>暂无文章，敬请期待。</p>
+      </div>
+    )}
+  </div>
+</BlogLayout>
